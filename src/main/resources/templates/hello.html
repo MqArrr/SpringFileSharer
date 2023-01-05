@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello</title>
+</head>
+<body style="font-size: 3em">
+<form th:method="POST" th:action="@{/file}" th:object="${fileRequest}">
+    <label for="filePath" style=" font-size: 45%" >Имя файла:</label>
+    <input type="text" id="filePath" name="filePath" style=" font-size: 45%" size="60" th:field="*{filePath}">
+    <input type="submit" value="Найти" style=" font-size: 45%">
+</form>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Download</title>
+</head>
+<body style="font-size: 3em">
+<label th:text="${path}">FILE PATH</label><br>
+<label th:text="${size}" >SIZE</label>
+<p><a href="/download/file" download>Скачать файл</a>
+</body>
+</html>
