@@ -1,6 +1,6 @@
 package by.makar.nekitweb8;
 
-import by.makar.nekitweb8.services.StorageService;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.MultipartConfigElement;
 import org.springframework.boot.CommandLineRunner;
@@ -34,14 +34,6 @@ public class NekitWeb8Application {
             throw new RuntimeException(e);
         }
 
-    }
-
-    @Bean
-    CommandLineRunner init(StorageService storageService) {
-        return (args) -> {
-            storageService.deleteAll();
-            storageService.init();
-        };
     }
 
     public static boolean checkHealth() throws IOException {

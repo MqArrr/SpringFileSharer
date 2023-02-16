@@ -1,9 +1,13 @@
-package by.makar.nekitweb8;
+package by.makar.nekitweb8.services;
 
 import by.makar.nekitweb8.util.FileRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,8 +21,8 @@ public class FileManager {
         System.out.println(file);
         return Arrays.stream(file.listFiles()).map(n -> new FileRequest(n, false)).toList();
     }
-    public boolean isFile(String path){
-        return new File(path).isFile();
-    }
 
+    public void uploadFile(MultipartFile file, String loc) throws IOException {
+        Files.copy(file.getInputStream(), Path.of(loc));
+    }
 }

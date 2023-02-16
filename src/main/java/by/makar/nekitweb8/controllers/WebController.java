@@ -1,17 +1,17 @@
 package by.makar.nekitweb8.controllers;
 
-import by.makar.nekitweb8.FileManager;
+import by.makar.nekitweb8.services.FileManager;
+import by.makar.nekitweb8.util.FileException;
 import by.makar.nekitweb8.util.FileRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,13 +31,11 @@ public class WebController {
     @GetMapping("/home")
     public String home(@ModelAttribute("fileRequest") FileRequest fileRequest, Model model){
         model.addAttribute("files", fileManager.getRoot());
-        System.out.println("Controller: " + fileManager.getRoot());
         return "hello";
     }
     @PostMapping("/files")
     public String files(@ModelAttribute("fileRequest") FileRequest fileRequest, Model model){
         model.addAttribute("files", fileManager.getFiles(fileRequest.getFilePath()));
-        System.out.println("Controller: " + fileManager.getRoot());
         return "hello";
     }
 
@@ -85,5 +83,16 @@ public class WebController {
     public ResponseEntity<HttpStatus> health(){
         return ResponseEntity.ok(HttpStatus.OK);
     }
+
+    @PostMapping("/upload/{fileLoc}")
+    public ResponseEntity<HttpStatus> upload(@PathVariable String fileLoc, MultipartFile file) throws FileException {
+        try {
+            fileManager.uploadFile(file, fileLoc);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+        }
+    }
+
+
 
 }
