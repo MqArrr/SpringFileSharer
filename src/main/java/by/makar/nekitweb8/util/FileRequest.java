@@ -22,13 +22,6 @@ public class FileRequest {
 
     private String uploadedFileName;
 
-    public FileRequest(File file){
-        filePath = file.getPath();
-        size = file.length();
-        isFolder = file.isDirectory();
-        name = file.getName();
-        extension = extension(filePath);
-    }
     public FileRequest(File file, boolean isDrive){
         filePath = file.getPath();
         size = file.length();
@@ -56,9 +49,7 @@ public class FileRequest {
     public boolean isPic(){
         if(extension == null)
             extension = extension(filePath);
-        if(extension.equals("jpeg") || extension.equals("jpg") || extension.equals("gif") || extension.equals("tiff") || extension.equals("png"))
-            return true;
-        return false;
+        return extension.equals("jpeg") || extension.equals("jpg") || extension.equals("gif") || extension.equals("tiff") || extension.equals("png");
     }
 
 }

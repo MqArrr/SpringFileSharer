@@ -3,6 +3,8 @@ package by.makar.nekitweb8.util;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.*;
+
 @Component
 //@ConfigurationProperties("storage")
 public class StorageProperties {

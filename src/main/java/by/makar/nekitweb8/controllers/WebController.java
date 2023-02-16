@@ -1,9 +1,10 @@
 package by.makar.nekitweb8.controllers;
 
 import by.makar.nekitweb8.services.FileManager;
-import by.makar.nekitweb8.util.FileException;
 import by.makar.nekitweb8.util.FileRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
@@ -14,10 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 
+@Slf4j
 @Controller
 public class WebController {
-
-
 
     private final FileManager fileManager;
 
@@ -26,7 +26,13 @@ public class WebController {
         this.fileManager = fileManager;
     }
 
-    @GetMapping("/home")
+    @GetMapping("/teapot")
+    @ResponseBody
+    public ResponseEntity<HttpStatus> teapot() {
+        return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+    }
+
+    @GetMapping({"/home", "/"})
     public String home(@ModelAttribute("fileRequest") FileRequest fileRequest, Model model){
         model.addAttribute("files", fileManager.getRoot());
         model.addAttribute("isRoot", true);
@@ -41,11 +47,6 @@ public class WebController {
         return "hello";
     }
 
-//    @GetMapping("/errorFile")
-//    public String error(){
-//        return "errorFile";
-//    }
-
     @PostMapping(value = "/file")
     public String getFile(@ModelAttribute("fileRequest") FileRequest fileRequest, HttpSession session, Model model) {
         String path = fileRequest.getFilePath();
@@ -58,7 +59,8 @@ public class WebController {
         else {
             session.setAttribute("path", path);
             model.addAttribute("path", path);
-            model.addAttribute("size", "Размер: " + String.format("%.2f",((double) file.length() / 1048576)) + " mb");
+            model.addAttribute("size", "Размер: " +
+                    String.format("%.2f",((double) file.length() / 1048576)) + " mb");
             model.addAttribute("file", fileRequest);
             return "download";
         }
@@ -124,18 +126,9 @@ public class WebController {
         headers.set("Connection", "keep-alive");
         headers.set("Content-Transfer-Encoding", "binary");
 
+
         return new ResponseEntity<>(new InputStreamResource(targetStream), headers, HttpStatus.OK);
     }
-
-//    @GetMapping(value = "/getImage", produces = MediaType.IMAGE_PNG_VALUE)
-//    @ResponseBody
-//    public byte[] getImageDynamicType(HttpSession session) throws IOException {
-//        File initialFile = new File("D:\\Java\\NekitWeb8\\src\\main\\resources\\static\\video.png");
-////        (String) session.getAttribute("path")
-//        InputStream targetStream = new FileInputStream(initialFile);
-//        return targetStream.readAllBytes();
-//    }
-//
     @GetMapping("/getImage")
     @ResponseBody
     public ResponseEntity<InputStreamResource> getImageDynamicType(HttpSession session) throws FileNotFoundException {
@@ -150,15 +143,12 @@ public class WebController {
         else if(path.endsWith(".png"))
             contentType = MediaType.IMAGE_PNG;
         else if(path.endsWith(".jpeg"))
-            contentType = MediaType.IMAGE_GIF;
+            contentType = MediaType.IMAGE_JPEG;
         else
             throw new RuntimeException("Not an image.");
-        InputStream targetStream = new FileInputStream(initialFile);
         return ResponseEntity.ok()
                 .contentType(contentType)
                 .body(new InputStreamResource(new FileInputStream(initialFile)));
     }
-
-
 
 }
