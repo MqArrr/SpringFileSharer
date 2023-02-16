@@ -1,14 +1,39 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="style.css">
+
 <head>
     <meta charset="UTF-8">
     <title>Hello</title>
 </head>
-<body style="font-size: 3em">
+<body>
 <form th:method="POST" th:action="@{/file}" th:object="${fileRequest}">
-    <label for="filePath" style=" font-size: 45%" >Имя файла:</label>
-    <input type="text" id="filePath" name="filePath" style=" font-size: 45%" size="60" th:field="*{filePath}">
+    <label for="AFilePath" style=" font-size: 45%" >Имя файла:</label>
+    <input type="text" id="AFilePath" name="filePath" style=" font-size: 45%" size="60" th:field="*{filePath}">
     <input type="submit" value="Найти" style=" font-size: 45%">
 </form>
+<a href="/upload">Загрузить файл с этого устройства</a>
+<br>
+Выберите папку или файл:
+<div th:each="file : ${files}">
+    <div th:if="${file.isFolder()}">
+        <form th:method="POST" th:action="@{/files}" th:object="${fileRequest}">
+            <input type="hidden" id="filePath" name="filePath" th:value="${file.filePath}">
+            <div th:if="${file.isDrive()}"  class="module">
+                <img for="drive" src="drive.png" class="pic">
+                <input  type="submit" id="drive" class="butt" th:value="${file.getFilePath()}"></div>
+            <div th:if="${!file.isDrive() && file.isFolder()}" class="module">
+                <img for="folder" src="folder.png" class="pic">
+                 <input  type="submit" id="folder" class="butt" th:value="${file.getName()}"></div>
+        </form>
+    </div>
+    <div th:if="${!file.isFolder()}">
+            <form th:method="POST" th:action="@{/file}" th:object="${fileRequest}">
+            <input type="hidden" id="filePath2" name="filePath" th:value="${file.filePath}">
+            <img for="file" src="file.png" class="pic">
+            <input  type="submit" id="file" class="butt" th:value="${file.getName()}">
+        </form>
+    </div>
+</div>
 </body>
 </html>

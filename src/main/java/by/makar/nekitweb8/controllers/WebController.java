@@ -1,10 +1,12 @@
-package by.makar.nekitweb8;
+package by.makar.nekitweb8.controllers;
 
+import by.makar.nekitweb8.FileManager;
+import by.makar.nekitweb8.util.FileRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,8 +20,24 @@ import java.io.InputStream;
 
 @Controller
 public class WebController {
-    @GetMapping("/hello")
-    public String hello(@ModelAttribute("fileRequest") FileRequest fileRequest){
+
+    private final FileManager fileManager;
+
+    @Autowired
+    public WebController(FileManager fileManager) {
+        this.fileManager = fileManager;
+    }
+
+    @GetMapping("/home")
+    public String home(@ModelAttribute("fileRequest") FileRequest fileRequest, Model model){
+        model.addAttribute("files", fileManager.getRoot());
+        System.out.println("Controller: " + fileManager.getRoot());
+        return "hello";
+    }
+    @PostMapping("/files")
+    public String files(@ModelAttribute("fileRequest") FileRequest fileRequest, Model model){
+        model.addAttribute("files", fileManager.getFiles(fileRequest.getFilePath()));
+        System.out.println("Controller: " + fileManager.getRoot());
         return "hello";
     }
 
@@ -61,6 +79,11 @@ public class WebController {
                 .contentLength(file.length())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
+    }
+    @ResponseBody
+    @GetMapping("/health")
+    public ResponseEntity<HttpStatus> health(){
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
 }
