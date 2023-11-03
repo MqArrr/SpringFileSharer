@@ -4,15 +4,20 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Hello</title>
+    <title>MqFileSharer</title>
 </head>
 <body>
 <form th:method="POST" th:action="@{/file}" th:object="${fileRequest}">
-    <label for="AFilePath" style=" font-size: 45%" >Имя файла:</label>
-    <input type="text" id="AFilePath" name="filePath" style=" font-size: 45%" size="60" th:field="*{filePath}">
-    <input type="submit" value="Найти" style=" font-size: 45%">
+    <label for="AFilePath" style=" font-size: 75%" >Имя файла:</label>
+    <input type="text" id="AFilePath" name="filePath" style="font-size: 75%" size="60" th:field="*{filePath}">
+    <input type="submit" value="Найти" class="upload_green" style=" font-size: 45%">
 </form>
-<a href="/upload">Загрузить файл с этого устройства</a>
+<div th:if="${!isRoot}" >
+    <form th:action="@{/getUpload}" th:method="POST" th:object="${fileRequest}">
+        <input type="hidden" id="BFilePath" name="filePath" style="font-size: 45%" size="60" th:field="*{filePath}">
+        <input type="submit" class="upload_green" value="Загрузить файл сюда">
+    </form>
+</div>
 <br>
 Выберите папку или файл:
 <div th:each="file : ${files}">
@@ -30,8 +35,12 @@
     <div th:if="${!file.isFolder()}">
             <form th:method="POST" th:action="@{/file}" th:object="${fileRequest}">
             <input type="hidden" id="filePath2" name="filePath" th:value="${file.filePath}">
-            <img for="file" src="file.png" class="pic">
-            <input  type="submit" id="file" class="butt" th:value="${file.getName()}">
+                <div th:if="${!file.isPic() && !file.isVideo()}"><img for="file1" src="file.png" class="pic">
+                <input  type="submit" id="file1" class="butt" th:value="${file.getName()}"></div>
+                <div th:if="${file.isPic() && !file.isVideo()}"><img for="file" src="picture.png" class="pic">
+                    <input  type="submit" id="file2" class="butt" th:value="${file.getName()}"></div>
+                <div th:if="${!file.isPic() && file.isVideo()}"><img for="file" src="video.png" class="pic">
+                    <input  type="submit" id="file3" class="butt" th:value="${file.getName()}"></div>
         </form>
     </div>
 </div>

@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Comfortaa';
+    src: url("/fonts/Comfortaa.woff") format("woff")
+}
+input{
+    font-family: Comfortaa;
+}
 .butt {
     background-color: #0034ff;
     border: none;
@@ -20,7 +27,44 @@
 html{
     font-size: 3em;
     font-family: 'Comfortaa';
-    /*font-family: 'Google Sans';*/
-    /*src: url('/fonts/GoogleSans-Regular.ttf');*/
+    src: url('/fonts');
+}
+.form_upload{
+    align-content: center;
 
+}
+.upload_table{
+    margin-left: auto;
+    margin-right: auto;
+}
+td{
+    font-size: 1.5em;
+}
+.upload_input{
+    font-size: 1.5em;
+    background-color: #0034ff;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 0.3em;
+    font-family: 'Comfortaa';
+}
+.cont{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+.upload_green{
+    background-color: #007c00;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.5em;
+    border-radius: 0.3em;
 }

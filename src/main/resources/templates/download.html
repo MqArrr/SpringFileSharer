@@ -3,12 +3,24 @@
 <link rel="stylesheet" href="style.css">
 <head>
     <meta charset="UTF-8">
-    <title>Download</title>
+    <title>MqFileSharer</title>
 </head>
 <body>
+
+<div class="cont">
 <label th:text="${path}">FILE PATH</label><br>
 <label th:text="${size}" >SIZE</label>
+    <div th:if="${!file.isPic() && file.isVideo()}">
+        <video width="520" height="440" controls>
+            <source src="/videos" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div th:if="${file.isPic() && !file.isVideo()}">
+       <img src="/getImage">
+    </div>
 <p><a href="/download/file" download>Скачать файл</a><br>
-    <a href="/home">Назад</a>
+    <a href="/home">На главную</a>
+</div>
 </body>
 </html>

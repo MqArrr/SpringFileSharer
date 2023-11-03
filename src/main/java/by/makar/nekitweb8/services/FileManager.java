@@ -13,16 +13,18 @@ import java.util.List;
 
 @Component
 public class FileManager {
+
     public List<FileRequest> getRoot(){
         return Arrays.stream(File.listRoots()).map(n -> new FileRequest(n, true)).toList();
     }
+
     public List<FileRequest> getFiles(String path){
         File file = new File(path);
-        System.out.println(file);
         return Arrays.stream(file.listFiles()).map(n -> new FileRequest(n, false)).toList();
     }
 
-    public void uploadFile(MultipartFile file, String loc) throws IOException {
-        Files.copy(file.getInputStream(), Path.of(loc));
+    public void uploadFile(MultipartFile file, String loc, String uploadedFileName) throws IOException {
+        File nFile = new File(loc + uploadedFileName);
+        Files.copy(file.getInputStream(), nFile.toPath());
     }
 }

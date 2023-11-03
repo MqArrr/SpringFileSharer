@@ -9,17 +9,15 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 @Controller
 public class WebController {
+
+
 
     private final FileManager fileManager;
 
@@ -31,30 +29,37 @@ public class WebController {
     @GetMapping("/home")
     public String home(@ModelAttribute("fileRequest") FileRequest fileRequest, Model model){
         model.addAttribute("files", fileManager.getRoot());
+        model.addAttribute("isRoot", true);
         return "hello";
     }
     @PostMapping("/files")
-    public String files(@ModelAttribute("fileRequest") FileRequest fileRequest, Model model){
+    public String files(@ModelAttribute("fileRequest") FileRequest fileRequest, Model model, HttpSession session){
+        System.out.println(fileRequest);
         model.addAttribute("files", fileManager.getFiles(fileRequest.getFilePath()));
+        model.addAttribute("isRoot", false);
+        session.setAttribute("path", fileRequest.getFilePath());
         return "hello";
     }
 
-    @GetMapping("/errorFile")
-    public String error(){
-        return "errorFile";
-    }
+//    @GetMapping("/errorFile")
+//    public String error(){
+//        return "errorFile";
+//    }
 
     @PostMapping(value = "/file")
     public String getFile(@ModelAttribute("fileRequest") FileRequest fileRequest, HttpSession session, Model model) {
         String path = fileRequest.getFilePath();
+        fileRequest.extension();
         File file = new File(path);
-        boolean exist = file.exists();
-        if(!exist)
-            return "redirect:/errorFile";
+        if(file.isDirectory())
+            return files(fileRequest, model, session);
+        if(!file.exists())
+            return "redirect:/error";
         else {
             session.setAttribute("path", path);
             model.addAttribute("path", path);
             model.addAttribute("size", "Размер: " + String.format("%.2f",((double) file.length() / 1048576)) + " mb");
+            model.addAttribute("file", fileRequest);
             return "download";
         }
     }
@@ -84,13 +89,74 @@ public class WebController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PostMapping("/upload/{fileLoc}")
-    public ResponseEntity<HttpStatus> upload(@PathVariable String fileLoc, MultipartFile file) throws FileException {
+
+    @PostMapping("/getUpload")
+    public String getUploadPage(@ModelAttribute("fileRequest") FileRequest fileRequest){
+        return "uploadForm";
+    }
+
+    @PostMapping("/upload")
+    public String upload(@ModelAttribute FileRequest fileRequest,
+                         @RequestParam("file") MultipartFile file, Model model, HttpSession session){
         try {
-            fileManager.uploadFile(file, fileLoc);
+            fileManager.uploadFile(file, fileRequest.getFilePath(), file.getOriginalFilename());
         } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+            return "error";
         }
+        model.addAttribute("files", fileManager.getFiles(fileRequest.getFilePath()));
+        model.addAttribute("isRoot", false);
+        session.setAttribute("path", fileRequest.getFilePath());
+        return "hello";
+    }
+
+    @GetMapping(value = "/videos")
+    @ResponseBody
+    public final ResponseEntity<InputStreamResource> retrieveResource(HttpSession session) throws Exception {
+
+        File initialFile = new File((String) session.getAttribute("path"));
+        InputStream targetStream = new FileInputStream(initialFile);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("video/mp4"));
+        headers.set("Accept-Ranges", "bytes");
+        headers.set("Expires", "0");
+        headers.set("Cache-Control", "no-cache, no-store");
+        headers.set("Connection", "keep-alive");
+        headers.set("Content-Transfer-Encoding", "binary");
+
+        return new ResponseEntity<>(new InputStreamResource(targetStream), headers, HttpStatus.OK);
+    }
+
+//    @GetMapping(value = "/getImage", produces = MediaType.IMAGE_PNG_VALUE)
+//    @ResponseBody
+//    public byte[] getImageDynamicType(HttpSession session) throws IOException {
+//        File initialFile = new File("D:\\Java\\NekitWeb8\\src\\main\\resources\\static\\video.png");
+////        (String) session.getAttribute("path")
+//        InputStream targetStream = new FileInputStream(initialFile);
+//        return targetStream.readAllBytes();
+//    }
+//
+    @GetMapping("/getImage")
+    @ResponseBody
+    public ResponseEntity<InputStreamResource> getImageDynamicType(HttpSession session) throws FileNotFoundException {
+        MediaType contentType;
+
+        File initialFile = new File((String) session.getAttribute("path"));
+        String path = initialFile.getPath();
+        if(path.endsWith(".gif"))
+            contentType = MediaType.IMAGE_GIF;
+        else if(path.endsWith(".jpg"))
+            contentType = MediaType.IMAGE_JPEG;
+        else if(path.endsWith(".png"))
+            contentType = MediaType.IMAGE_PNG;
+        else if(path.endsWith(".jpeg"))
+            contentType = MediaType.IMAGE_GIF;
+        else
+            throw new RuntimeException("Not an image.");
+        InputStream targetStream = new FileInputStream(initialFile);
+        return ResponseEntity.ok()
+                .contentType(contentType)
+                .body(new InputStreamResource(new FileInputStream(initialFile)));
     }
 
 

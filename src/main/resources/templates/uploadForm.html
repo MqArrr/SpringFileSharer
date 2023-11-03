@@ -1,26 +1,25 @@
-<html xmlns:th="https://www.thymeleaf.org">
+<html lang="ru" xmlns:th="https://www.thymeleaf.org">
+<link rel="stylesheet" href="style.css">
+<title>MqFileSharer</title>
 <body>
-
-<div th:if="${message}">
-  <h2 th:text="${message}"/>
-</div>
-
-<div>
-  <form method="POST" enctype="multipart/form-data" action="/">
-    <table>
-      <tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
-      <tr><td></td><td><input type="submit" value="Upload" /></td></tr>
+<div class="form_upload">
+  <form method="POST" enctype="multipart/form-data" th:action="@{/upload}" th:object="${fileRequest}" accept-charset="UTF-8">
+    <input type="hidden" id="BFilePath" name="filePath" th:field="*{filePath}">
+    <input type="hidden"  name="file" th:field="*{uploadedFileName}">
+    <table class="upload_table">
+      <tr><td>Загружаемый файл:</td><td><input class="upload_input" type="file" name="file" id="file" /></td></tr>
+      <tr><td></td><td><input type="submit" class="upload_input" value="Загрузить" /></td></tr>
     </table>
   </form>
 </div>
 
-<div>
-  <ul>
-    <li th:each="file : ${files}">
-      <a th:href="${file}" th:text="${file}" />
-    </li>
-  </ul>
-</div>
+<!--<div>-->
+<!--  <ul>-->
+<!--    <li th:each="file : ${files}">-->
+<!--      <a th:href="${file}" th:text="${file}" />-->
+<!--    </li>-->
+<!--  </ul>-->
+<!--</div>-->
 
 </body>
 </html>
